@@ -1,6 +1,8 @@
 var express = require("express");
 var router = express.Router();
 
+const User = require("../models/users");
+
 const passportUtil = require("../middleware/passportUtils");
 
 /* GET users listing. */
@@ -9,20 +11,26 @@ router.get("/", function (req, res, next) {
 });
 
 router.get('/login', function(req, res, next) {
-  res.render('login');
+  const success = req.flash('success');
+  const error = req.flash('error');
+
+  res.render('users/login', { success: success , error: error});
 });
 
 router.post(
   "/login",
   passportUtil.authenticate("local", {
     successRedirect: "/",
-    failureRedirect: "/login",
+    failureRedirect: "/users/login",
     failureFlash: true,
   })
 );
 
 router.get("/signup", function (req, res, next) {
-  res.render("users/signup");
+  const success = req.flash("success");
+  const error = req.flash("error");
+
+  res.render("users/signup", { success: success, error: error });
 });
 
 router.post("/signup", function (req, res, next) {
@@ -53,8 +61,8 @@ router.post("/signup", function (req, res, next) {
       if (err) {
         return next(err);
       }
-
-      res.json({ success: true });
+      req.flash("success", "You have successfully signed up");
+      res.redirect("/users/login");
     });
   });
 });
