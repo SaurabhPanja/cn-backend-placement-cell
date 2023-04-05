@@ -6,6 +6,7 @@ const logger = require("morgan");
 const mongoose = require("mongoose");
 const flash = require('connect-flash');
 const session = require('express-session');
+const passport = require('passport');
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
@@ -37,6 +38,8 @@ app.use(session({
   saveUninitialized: false
 }));
 app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
