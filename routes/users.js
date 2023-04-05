@@ -7,6 +7,7 @@ const passportUtil = require("../middleware/passportUtils");
 
 /* GET users listing. */
 router.get("/", function (req, res, next) {
+  console.log(req.user);
   res.send("respond with a resource "+req.flash("success")+" "+req.flash("error")+" "+req.flash("info")+" "+req.flash("warning"));
 });
 
@@ -20,6 +21,10 @@ router.get("/all", function (req, res, next) {
 });
 
 router.get("/login", function (req, res, next) {
+  if(req.user){
+    req.flash("info", "You are already logged in");
+    return res.redirect("/users");
+  }
   const success = req.flash("success");
   const error = req.flash("error");
 
@@ -39,6 +44,10 @@ router.post(
 );
 
 router.get("/signup", function (req, res, next) {
+  if(req.user){
+    req.flash("info", "You are already logged in");
+    return res.redirect("/users");
+  }
   const success = req.flash("success");
   const error = req.flash("error");
 
@@ -48,6 +57,7 @@ router.get("/signup", function (req, res, next) {
 router.post("/signup", function (req, res, next) {
   const email = req.body.email;
   const password = req.body.password;
+  const name = req.body.name;
 
   if (!email || !password) {
     return res
@@ -67,6 +77,7 @@ router.post("/signup", function (req, res, next) {
     const user = new User({
       email: email,
       password: password,
+      name: name,
     });
 
     user.save(function (err) {
