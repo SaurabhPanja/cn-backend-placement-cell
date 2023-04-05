@@ -7,23 +7,35 @@ const passportUtil = require("../middleware/passportUtils");
 
 /* GET users listing. */
 router.get("/", function (req, res, next) {
-  res.send("respond with a resource");
+  res.send("respond with a resource "+req.flash("success")+" "+req.flash("error")+" "+req.flash("info")+" "+req.flash("warning"));
 });
 
-router.get('/login', function(req, res, next) {
-  const success = req.flash('success');
-  const error = req.flash('error');
+router.get("/all", function (req, res, next) {
+  User.find({}, function (err, users) {
+    if (err) {
+      return next(err);
+    }
+    res.json(users);
+  });
+});
 
-  res.render('users/login', { success: success , error: error});
+router.get("/login", function (req, res, next) {
+  const success = req.flash("success");
+  const error = req.flash("error");
+
+  res.render("users/login", { success: success, error: error });
 });
 
 router.post(
   "/login",
   passportUtil.authenticate("local", {
-    successRedirect: "/",
     failureRedirect: "/users/login",
     failureFlash: true,
-  })
+  }),
+  function (req, res) {
+    req.flash("success", "You have successfully logged in");
+    res.redirect("/users");
+  }
 );
 
 router.get("/signup", function (req, res, next) {
@@ -64,6 +76,16 @@ router.post("/signup", function (req, res, next) {
       req.flash("success", "You have successfully signed up");
       res.redirect("/users/login");
     });
+  });
+});
+
+router.get("/logout", function (req, res, next) {
+  console.log("logging out");
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
   });
 });
 
