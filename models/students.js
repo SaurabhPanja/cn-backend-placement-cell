@@ -4,7 +4,10 @@ const Schema = mongoose.Schema;
 const studentSchema = new Schema({
   name: String,
   college: String,
-  status: String,
+  placementStatus:String,
+  dsaFinalScore:String,
+  webDFinalScore:String,
+  reactFinalScore:String,
 });
 
 
