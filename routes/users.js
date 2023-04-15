@@ -3,15 +3,16 @@ var router = express.Router();
 
 const User = require("../models/users");
 
+const ensureAuthenticated = require("../middleware/authenticate");
+
 const passportUtil = require("../middleware/passportUtils");
 
 /* GET users listing. */
 router.get("/", function (req, res, next) {
-  console.log(req.user);
-  res.send("respond with a resource "+req.flash("success")+" "+req.flash("error")+" "+req.flash("info")+" "+req.flash("warning"));
+  res.redirect("/students")
 });
 
-router.get("/all", function (req, res, next) {
+router.get("/all", ensureAuthenticated,  function (req, res, next) {
   User.find({}, function (err, users) {
     if (err) {
       return next(err);
