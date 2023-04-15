@@ -1,6 +1,6 @@
 <%- include('../partials/header') %>
-<form action="/users/login" method="post" class="m-auto max-w-500 mt-5">
-  <h1>Login</h1>
+<h1>New Student</h1>
+<form action="/users/login" method="post" class="m-auto">
   <div class="form-group">
     <label for="email">Email address</label>
     <input
@@ -23,9 +23,6 @@
       required
     />
   </div>
-  <button type="submit" class="btn btn-primary mt-3">Submit</button>
-  <p class="mt-2">Create a new account? 
-    <a href="/users/signup">Sign Up</a>
-  </p>
+  <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 <%- include("../partials/footer") %>

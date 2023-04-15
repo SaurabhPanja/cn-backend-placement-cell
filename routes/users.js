@@ -59,10 +59,15 @@ router.post("/signup", function (req, res, next) {
   const password = req.body.password;
   const name = req.body.name;
 
+
   if (!email || !password) {
-    return res
-      .status(422)
-      .json({ error: "You must provide an email and password" });
+    req.flash("error", "Please enter all the fields");
+    return res.redirect("/users/signup");
+  }
+
+  if(email.split("@")[1] !== "codingninjas.com"){
+    req.flash("error", "You have to be a codingninjas employee to Sign Up, use your codingninjas.com email id!");
+    return res.redirect("/users/signup");
   }
 
   User.findOne({ email: email }, function (err, existingUser) {
