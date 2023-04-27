@@ -1,0 +1,67 @@
+<%- include('../partials/header') %>
+<div class="container">
+  <h1 class="text-center">Interviews</h1>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Company Name</th>
+        <th scope="col">Date</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td><%= interview.companyName %></td>
+        <td><%= interview.date.toLocaleDateString() %></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="row">
+    <div class="col-8">
+      <h3>List of Students</h3>
+    </div>
+    <div class="col-4">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        Add Student
+      </button>
+    </div>
+  </div>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <% interview.students.forEach((student) => { %>
+        <tr>
+          <td><%= student.name %></td>
+          td
+        </tr>
+        <% }) %>
+    </tbody>
+  </table>
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Add Student</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <form method="post" action="/interviews/<%= interview._id %>/students" id="add-student-to-interview">
+            <select class="form-select" name="student" aria-label="Default select example">
+              <option selected>Select Student</option>
+              <% students.forEach((student) => { %>
+                <option value="<%= student._id %>"><%= student.name %></option>
+                <% }) %>
+            </select>
+            <button type="submit" class="btn btn-primary mt-2">Add</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+<%- include("../partials/footer") %>

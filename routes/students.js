@@ -15,7 +15,7 @@ router.post("/", ensureAuthenticated, function (req, res, next) {
         college: req.body['college'],
         placementStatus: req.body['placement-status'],
         dsaFinalScore: req.body['dsa-final-score'],
-        webDFinalScore: req.body['webd-final-score'],
+        webdFinalScore: req.body['webd-final-score'],
         reactFinalScore: req.body['react-final-score'],
     });
 
@@ -25,7 +25,18 @@ router.post("/", ensureAuthenticated, function (req, res, next) {
             res.redirect("/students/new");
         } else {
             req.flash("success", "Student saved successfully");
+            res.redirect("/students");
+        }
+    });
+});
+
+router.get("/", ensureAuthenticated, function (req, res, next) {
+    Student.find({}, function (err, students) {
+        if (err) {
+            req.flash("error", "Error in fetching students");
             res.redirect("/students/new");
+        } else {
+            res.render("students/students", { title: "Students", students: students, success: req.flash("success"), error: req.flash("error") });
         }
     });
 });

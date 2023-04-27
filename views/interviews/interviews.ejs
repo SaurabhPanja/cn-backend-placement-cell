@@ -1,0 +1,24 @@
+<%- include('../partials/header') %>
+<div class="container">
+  <h1 class="text-center">Interviews</h1>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Company Name</th>
+        <th scope="col">Date</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% interviews.forEach((interview) => { %>
+      <tr>
+        <td><%= interview.companyName %></td>
+        <td><%= interview.date.toLocaleDateString() %></td>
+        <td>
+          <a href="/interviews/<%= interview._id %>" class="btn btn-success">View</a>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+<%- include("../partials/footer") %>

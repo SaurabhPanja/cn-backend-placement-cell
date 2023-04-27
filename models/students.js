@@ -6,7 +6,7 @@ const studentSchema = new Schema({
   college: String,
   placementStatus:String,
   dsaFinalScore:String,
-  webDFinalScore:String,
+  webdFinalScore:String,
   reactFinalScore:String,
 });
 
