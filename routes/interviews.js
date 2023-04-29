@@ -3,11 +3,12 @@ var router = express.Router();
 
 const Interview = require("../models/interviews");
 const Student = require("../models/students");
+const Result = require("../models/results")
 
 const ensureAuthenticated = require("../middleware/authenticate");
 
 router.get("/new", ensureAuthenticated, function (req, res, next) {
-  // Interview.deleteMany({}, function(err) {
+  // Student.deleteMany({}, function(err) {
   //     if (err) {
   //       console.log(err);
   //     } else {
@@ -54,9 +55,10 @@ router.get("/", ensureAuthenticated, function (req, res, next) {
 
 //see interviewDetail
 router.get("/:id", ensureAuthenticated, function (req, res, next) {
-  Interview.findById(req.params.id)
-    .populate("students")
-    .exec(function (err, interview) {
+  Result.find({ interview: req.params.id})
+    .populate("student")
+    .populate("interview")
+    .exec(function (err, results) {
       if (err) {
         req.flash("error", "Error in fetching interview details");
         res.redirect("/interviews/new");
@@ -66,12 +68,29 @@ router.get("/:id", ensureAuthenticated, function (req, res, next) {
             req.flash("error", "Error in fetching students");
             res.redirect("/interviews/new");
           } else {
-            res.render("interviews/interviewDetail", {
-              interview: interview,
-              students: students,
-              success: req.flash("success"),
-              error: req.flash("error"),
+            // remove students from the list who are already in the interview
+            students = students.filter(function (student) {
+              return !results.some(function (result) {
+                return result.student._id.equals(student._id);
+              });
             });
+
+            Interview.findById(req.params.id, function (err, interview) {
+              if (err) {
+                req.flash("error", "Error in fetching interview");
+                res.redirect("/interviews/new");
+              } else {
+                res.render("interviews/interviewDetail", {
+                  interview: interview,
+                  results: results,
+                  students: students,
+                  success: req.flash("success"),
+                  error: req.flash("error"),
+                });
+              }
+            });
+            
+
           }
         });
       }
@@ -95,14 +114,63 @@ router.post("/:id/students", ensureAuthenticated, function (req, res, next) {
                 req.flash("error", "Error in saving interview");
                 res.redirect("/interviews/new");
                 } else {
-                req.flash("success", "Student added successfully");
-                res.redirect("/interviews/" + interview._id);
+                  Result.create({
+                    status: "Pending",
+                    student: student._id,
+                    interview: interview._id,
+                  }, function (err, result) {
+                    if (err) {
+                      req.flash("error", "Error in saving result");
+                      res.redirect("/interviews/new");
+                    } else {
+                      req.flash("success", "Student added successfully");
+                      res.redirect("/interviews/" + interview._id);
+                    }
+                  });
                 }
             });
             }
         });
         }
     });
+});
+
+router.get("/reset/now", ensureAuthenticated, function (req, res, next) {
+  Interview.deleteMany({}, function (err) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("All documents deleted");
+    }
+  });
+  Student.deleteMany({}, function (err) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("All documents deleted");
+    }
+  });
+  Result.deleteMany({}, function (err) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("All documents deleted");
+    }
+  });
+  req.flash("success", "All interviews deleted successfully");
+  res.redirect("/interviews");
+});
+
+
+router.get("/test/new", ensureAuthenticated, function (req, res, next) {
+  Result.find({}).populate("student").exec(function (err, interviews) {
+    if (err) {
+      req.flash("error", "Error in fetching interviews");
+      res.redirect("/interviews/new");
+    } else {
+      res.json(interviews)
+    }
+  });
 });
 
 

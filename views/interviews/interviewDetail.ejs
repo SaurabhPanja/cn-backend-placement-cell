@@ -21,7 +21,7 @@
       <h3>List of Students</h3>
     </div>
     <div class="col-4">
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+      <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal">
         Add Student
       </button>
     </div>
@@ -30,15 +30,31 @@
     <thead>
       <tr>
         <th scope="col">Name</th>
+        <th scope="col">Status</th>
         <th scope="col">Action</th>
       </tr>
     </thead>
     <tbody>
 
-      <% interview.students.forEach((student) => { %>
+      <% results.forEach((result) => { %>
         <tr>
-          <td><%= student.name %></td>
-          td
+          <td><%= result.student.name %></td>
+          <form action="/students/<%= result.student._id %>/interviews/<%= result.interview.id%>/results" method="post">
+          <td>
+            <select name="status" class="form-select" aria-label="Default select example">
+              <option selected><%= result.status %></option>
+              <option value="pass">Pass</option>
+              <option value="fail">Fail</option>
+              <option value="on-hold">On hold</option>
+              <option value="did-not-attempt">Did Not Attempt</option>
+            </select>
+          </td>
+          <td>
+              <button class="btn btn-outline-primary">
+                Update
+              </button>8
+            </td>
+          </form>
         </tr>
         <% }) %>
     </tbody>
@@ -58,7 +74,7 @@
                 <option value="<%= student._id %>"><%= student.name %></option>
                 <% }) %>
             </select>
-            <button type="submit" class="btn btn-primary mt-2">Add</button>
+            <button type="submit" class="btn btn-success mt-2">Add</button>
           </form>
         </div>
       </div>

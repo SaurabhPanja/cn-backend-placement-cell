@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 
 const Student = require("../models/students");
+const Result = require("../models/results")
 
 const ensureAuthenticated = require("../middleware/authenticate");
 
@@ -40,7 +41,28 @@ router.get("/", ensureAuthenticated, function (req, res, next) {
         }
     });
 });
-        
+
+router.post("/:studentId/interviews/:interviewId/results", ensureAuthenticated, function (req, res, next) {
+    Student.findById(req.params.studentId, function (err, student) {
+        if (err) {
+            req.flash("error", "Error in fetching student");
+            res.redirect("/students");
+        } else {
+            Result.findOneAndUpdate(
+                { student: student._id, interview: req.params.interviewId },
+                { status: req.body['status'] },
+                function (err, result) {
+                if (err) {
+                    req.flash("error", "Error in saving result");
+                    res.redirect("/students");
+                } else {
+                    req.flash("success", "Result saved successfully");
+                    res.redirect("/interviews/" + req.params.interviewId);
+                }
+            });
+        }
+    });
+});
 
 
 

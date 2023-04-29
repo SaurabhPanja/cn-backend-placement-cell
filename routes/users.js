@@ -97,7 +97,6 @@ router.post("/signup", function (req, res, next) {
 });
 
 router.get("/logout", function (req, res, next) {
-  console.log("logging out");
   req.logout(function (err) {
     if (err) {
       return next(err);
