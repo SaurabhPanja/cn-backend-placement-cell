@@ -1,6 +1,8 @@
 var express = require("express");
 var router = express.Router();
 
+const json2csv = require('json2csv').parse;
+
 const Interview = require("../models/interviews");
 const Student = require("../models/students");
 const Result = require("../models/results")
@@ -8,13 +10,6 @@ const Result = require("../models/results")
 const ensureAuthenticated = require("../middleware/authenticate");
 
 router.get("/new", ensureAuthenticated, function (req, res, next) {
-  // Student.deleteMany({}, function(err) {
-  //     if (err) {
-  //       console.log(err);
-  //     } else {
-  //       console.log("All documents deleted");
-  //     }
-  //   });
   res.render("interviews/newInterview", {
     success: req.flash("success"),
     error: req.flash("error"),
@@ -51,6 +46,42 @@ router.get("/", ensureAuthenticated, function (req, res, next) {
       });
     }
   });
+});
+
+router.get("/download-csv", ensureAuthenticated, function (req, res, next) {
+  Result.find({})
+    .populate("student")
+    .populate("interview")
+    .exec(function (err, results) {
+      if (err) {
+        console.log(err);
+        req.flash("error", "Error in fetching interview details");
+        res.redirect("/interviews/new");
+      } else {
+         let data = [];
+          results.forEach(function(result){
+            let temp = {};
+            temp.student_id = result.student._id;
+            temp.student_name = result.student.name;
+            temp.student_college = result.student.college;
+            temp.student_status = result.student.placementStatus;
+            temp.dsaFinalScore = result.student.dsaFinalScore;
+            temp.webDFinalScore = result.student.webdFinalScore;
+            temp.reactFinalScore = result.student.reactFinalScore;
+            temp.interview_date = result.interview.date;
+            temp.interview_company = result.interview.companyName;
+            temp.interview_student_result = result.status;
+
+            data.push(temp);
+          });
+        
+        const csv =  json2csv(data);
+
+        res.setHeader("Content-disposition", "attachment; filename=results.csv");
+        res.set("Content-Type", "text/csv");
+        res.status(200).send(csv);
+      }
+    });
 });
 
 //see interviewDetail
